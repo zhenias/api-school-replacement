@@ -46,12 +46,23 @@ Route::get( '' , function() {
 
 Route::prefix('Account')->group(function () {
 
+    Route::get( '' , function() {
+        return callbacks(false, "Bad request", 400);
+    });
+
     Route::post( '/Authorize', [ Account::class , 'Authorization' ] );
     Route::post( '/RefreshToken', [ Account::class , 'refreshToken' ] );
+    Route::post( '/CreateAccount', [ Account::class , 'createAccount' ] );
+    Route::get( '/ViewUser', [ Account::class , 'ViewUser' ] );
+    
     
 });
 
 Route::prefix('AccessRights')->group(function () {
+
+    Route::get( '' , function() {
+        return callbacks(false, "Bad request", 400);
+    });
 
     Route::post( '/Edit', [ AccessRights::class , 'updateAccessRightsWithAccessToken' ] );
     Route::get( '/View', [ AccessRights::class , 'ViewDataAccessRights' ] );
@@ -59,6 +70,10 @@ Route::prefix('AccessRights')->group(function () {
 });
 
 Route::prefix('Announcements')->group(function () {
+
+    Route::get( '' , function() {
+        return callbacks(false, "Bad request", 400);
+    });
 
     Route::get( '/View', [ Announcements::class , 'ViewData' ] );
     Route::get( '/View/{id_annoncements}', [ Announcements::class , 'ViewData' ] );

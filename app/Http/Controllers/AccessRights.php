@@ -22,7 +22,8 @@
                 "is_edit_users" =>  $request['is_edit_users'],
                 "is_delete_users" =>  $request['is_delete_users'],
                 "is_edit_logo" =>  $request['is_edit_logo'],
-                "is_edit_name_website" => $request['is_edit_name_website']
+                "is_edit_name_website" => $request['is_edit_name_website'],
+                "is_view_users" => $request['is_view_users']
             ] );
 
         }

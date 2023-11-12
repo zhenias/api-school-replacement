@@ -185,6 +185,17 @@ class AccessRights extends Model
         return true;
     }
 
+    public function is_view_users():bool {
+
+        if ( !$this->access_rights->is_view_users )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    
     public function checkHasProvide(int|string|null $input, int|string|null $default = 0) {
         // Jezeli wartosc isnieje i nie jest pusta, to wtedy zwraca $input
         if ( isset($input) && !empty($input) ) {
@@ -194,6 +205,8 @@ class AccessRights extends Model
         return $default;
 
     }
+
+    
 
     protected function updateAccessRights(int $id_access, array $permission) {
 
@@ -219,7 +232,8 @@ class AccessRights extends Model
             "is_edit_users" => $this->checkHasProvide( $permission['is_edit_users'], $this->is_edit_users() ),
             "is_delete_users" => $this->checkHasProvide( $permission['is_delete_users'], $this->is_delete_users() ),
             "is_edit_logo" => $this->checkHasProvide( $permission['is_edit_logo'], $this->is_edit_logo() ),
-            "is_edit_name_website" => $this->checkHasProvide( $permission['is_edit_name_website'], $this->is_edit_name_website() )
+            "is_edit_name_website" => $this->checkHasProvide( $permission['is_edit_name_website'], $this->is_edit_name_website() ),
+            "is_view_users" => $this->checkHasProvide( $permission['is_view_users'], $this->is_edit_name_website() ),
         ];
 
         $dbUpdate = DB::table("access_rights")

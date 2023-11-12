@@ -11,6 +11,7 @@ use Spatie\Backtrace\Arguments\ReducedArgument\TruncatedReducedArgument;
 use function PHPUnit\Framework\callback;
 
 use App\Models\Settings;
+use App\Models\AccessRights;
 
 class AccessAccountCore extends Model
 {
@@ -282,6 +283,160 @@ class AccessAccountCore extends Model
     
         return $this->createTokenForUser( $user->user_id );
     }
+
+    public function addNewUser( ?string $user_name, ?string $user_lastname, ?string $login, ?string $password, ?string $email, ?int $is_active = 1, ?int $is_blocked = 0, ?int $is_new_pass = 1 ) {
+
+        if ( !$user_name && !$user_lastname ) {
+            return callbacks(false, "user_name or user_lastname is required", 400);
+        }
+
+        if ( !$login && !$email ) {
+            return callbacks(false, "login or email is required", 400);
+        }
+
+        if ( !$password ) {
+            return callbacks(false, "password is required", 400);
+        }
+
+        $checkEmail = DB::table("users")->where("email", $email)->first();
+
+        if ( $checkEmail ) {
+            return callbacks(false, "email is exist", 400);
+        }
+
+        $Settings = new Settings;
+        $Settings = $Settings->settings();
+        if ( !$Settings->default_id_access_for_user ) {
+            return callbacks(false, "Default permissions are not defined in the settings", 400);
+        }
+
+        $defaualt_access = $Settings->default_id_access_for_user;
+
+        $pass_hash = password_hash($password, PASSWORD_DEFAULT);
+
+        $createBuildAddNewUser = [
+            "user_id" => NULL,
+            "id_access" => $defaualt_access,
+            "user_name" => $user_name,
+            "user_lastname" => $user_lastname,
+            "login" => $login,
+            "password" => $pass_hash,
+            "is_new_pass" => $is_new_pass,
+            "email" => $email,
+            "is_active" => $is_active,
+            "is_blocked" => $is_blocked,
+            "datetime_add" => time()
+        ];
+
+        $dbAdd = DB::table("users")->insert($createBuildAddNewUser);
+
+        if ( !$dbAdd ) {
+            return callbacks( false, $this->error[4], 400 );
+        }
+
+        $createBuildAddNewUser['password'] = $password;
+
+        return callbacks(true, $createBuildAddNewUser);
+
+    }
     
+
+    public function createAccount( ?string $access_token, ?string $user_name, ?string $user_lastname, ?string $login, ?string $password, ?string $email, ?int $is_active = 1, ?int $is_blocked = 0, ?int $is_new_pass = null ) {
+
+        $AccessAccountCore = $this->checkAccessToken($access_token);
+
+        if ( !$AccessAccountCore->original['ok'] ) {
+            return $AccessAccountCore;
+        }
+
+        $token_access = json_decode(json_encode($AccessAccountCore->original['message']), 1);
+
+        $AccessRights = new AccessRights();
+        $checkAccessU = $AccessRights->checkAccessRightsUser( $token_access['user_id'] );
+
+        if ( !$checkAccessU->original['ok'] ) {
+            return $checkAccessU;
+        } 
+
+        if ( !$AccessRights->is_insert_users() ) {
+            return callbacks(false, "User does not have permissions", 400);
+        }
+
+        return $this->addNewUser(
+            $user_name, 
+            $user_lastname, 
+            $login, 
+            $password, 
+            $email, 
+            $is_active, 
+            $is_blocked, 
+            $is_new_pass
+        );
+
+    }
+
+    public function ViewUser( ?string $access_token, ?int $user_id ) {
+
+        $AccessAccountCore = $this->checkAccessToken($access_token);
+
+        if ( !$AccessAccountCore->original['ok'] ) {
+            return $AccessAccountCore;
+        }
+
+        $token_access = json_decode(json_encode($AccessAccountCore->original['message']), 1);
+
+        $AccessRights = new AccessRights();
+        $checkAccessU = $AccessRights->checkAccessRightsUser( $token_access['user_id'] );
+
+        if ( !$checkAccessU->original['ok'] ) {
+            return $checkAccessU;
+        } 
+
+        if ( !$AccessRights->is_view_users() ) {
+            return callbacks(false, "User does not have permissions", 400);
+        }
+
+        $checkAccessRightsUser = new AccessRights;
+
+        //$user = [];
+        if ( !$user_id ) {
+
+            $users_table = DB::table("users")->get();
+            foreach($users_table as $userss) {
+                unset($userss->password);
+                unset($userss->id_access);
+                $retu = $checkAccessRightsUser->checkAccessRightsUser($userss->user_id);
+                if ( $retu->original['ok'] ) {
+                    $userss->access_rights = $retu->original['message'];
+                }else {
+                    $userss->access_rights = 'unknown';
+                }
+                $user[] = $userss;
+            }
+            $users = $user;
+
+        }else {
+
+            $users = DB::table("users")->where("user_id", $user_id)->first();
+            if ( !$users )
+            {
+                return callbacks(false, "User not exist");
+            }
+            $retu = $checkAccessRightsUser->checkAccessRightsUser($users->user_id);
+            
+            unset($users->password);
+            unset($users->id_access);
+
+            if ( $retu->original['ok'] ) {
+                $users->access_rights = $retu->original['message'];
+            }else {
+                $users->access_rights = 'unknown';
+            }
+
+        }
+
+        return callbacks(true, $users);
+
+    }
 
 }

@@ -44,4 +44,36 @@
             
         }
 
+
+        public function createAccount(Request $request) {
+
+            
+            $AccessAccount = new AccessAccount();
+
+            return $AccessAccount->createAccount( 
+                $request->access_token, 
+                $request->user_name, 
+                $request->user_lastname, 
+                $request->login, 
+                $request->password, 
+                $request->email, 
+                $request->is_active, 
+                $request->is_blocked, 
+                $request->is_new_pass 
+            );
+            
+        }
+
+        public function ViewUser(Request $request) {
+
+            
+            $AccessAccount = new AccessAccount();
+
+            return $AccessAccount->ViewUser( 
+                $request->access_token, 
+                $request->user_id
+            );
+            
+        }
+
     }
