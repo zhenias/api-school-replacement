@@ -246,8 +246,8 @@ class AccessRights extends Model
 
         return callbacks(true, $updatePermissionBuild, 200);
     }
-
-    public function updateAccessRights_Final(int|null $user_id, int $id_access, array $permission) {
+    // int|null => ?int
+    public function updateAccessRights_Final(?int $user_id, int $id_access, array $permission) {
 
         $AccessAccountCore_class = new AccessAccountCore;
         $AccessAccountCore = $AccessAccountCore_class->checkUser($user_id);
