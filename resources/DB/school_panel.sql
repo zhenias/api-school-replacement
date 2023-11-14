@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Lis 12, 2023 at 12:43 PM
+-- Generation Time: Lis 14, 2023 at 08:32 PM
 -- Wersja serwera: 10.4.28-MariaDB
 -- Wersja PHP: 8.2.4
 
@@ -37,6 +37,7 @@ CREATE TABLE `access_rights` (
   `is_delete_announcements` int(11) NOT NULL DEFAULT 0 COMMENT 'Usuwanie ogloszen',
   `is_insert_announcements` int(11) NOT NULL DEFAULT 0 COMMENT 'Dodawanie nowyc ogloszen',
   `is_edit_users` int(11) NOT NULL DEFAULT 0 COMMENT 'Edytowanie uzytkownika',
+  `is_view_users` int(11) NOT NULL DEFAULT 0,
   `is_delete_users` int(11) NOT NULL DEFAULT 0 COMMENT 'usuwanie uzytkownika',
   `is_insert_users` int(11) NOT NULL DEFAULT 0 COMMENT 'Dodawanie nowego użytkownika',
   `is_edit_logo` int(11) NOT NULL DEFAULT 0 COMMENT 'Edytowanie logo.',
@@ -48,9 +49,9 @@ CREATE TABLE `access_rights` (
 -- Dumping data for table `access_rights`
 --
 
-INSERT INTO `access_rights` (`id_access`, `name_access`, `is_edit_access_rights`, `is_delete_access_rights`, `is_insert_access_rights`, `is_edit_announcements`, `is_delete_announcements`, `is_insert_announcements`, `is_edit_users`, `is_delete_users`, `is_insert_users`, `is_edit_logo`, `is_edit_name_website`, `is_edit_this_id_access`) VALUES
-(1, 'Administrator', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0),
-(2, 'Nauczyciel', 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1);
+INSERT INTO `access_rights` (`id_access`, `name_access`, `is_edit_access_rights`, `is_delete_access_rights`, `is_insert_access_rights`, `is_edit_announcements`, `is_delete_announcements`, `is_insert_announcements`, `is_edit_users`, `is_view_users`, `is_delete_users`, `is_insert_users`, `is_edit_logo`, `is_edit_name_website`, `is_edit_this_id_access`) VALUES
+(1, 'Administrator', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0),
+(2, 'Użytkownik', 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -87,7 +88,7 @@ INSERT INTO `access_token` (`id_token`, `access_token`, `refresh_token`, `expire
 (16, '734H6gFGj2oBDbeKUmGEBG82tx1lST137milUdlzsRQhLFzt7gcoRLGTlWOdDeBJIahFDWYg9IK1adFz', 'W3svfQk270famGbrLaSEGrNH4XtV50hsNzXdEC9gAAhGIyrvtKcmFoS00M8hw8bkDK0QmRo1BfFnQOe3bmHqp9OClYSzFYgIppKZqopvjpYdyqhczpirUZwEt8elzcGGpE', 1699707064, 1),
 (17, 'A4jqcSEUDcUPrzWiGizGU507XdnQiaNImgmYw72SDsR8adnP3r7rbqmDTuTVN9HHfEw0ZfviPwET1P0L', 'UOijsVhnMEszyjJhftqEWtK8vtDGJknULnnSdNQqMgJUT9iTP62ReJ4Ll2Vh8BRxlBk7QzjV6pF6ULZ7h8s23euFyksKG6Ns6pxGdiVdVz4ZGs7YyxP7fKDytINWHi1A7b', 1699707584, 1),
 (18, 'RWbPxMUb5x4AIR0lehDESATxHLQWWZ1rZj70yS7LY6lxc63ljoeEw50VPhsU0Cb5IB9RCC7Jz6qmoS7Z', 'SV6krNhhFePuGSmN54Kvj31h9H716EBSjSUotjlR2azW6dtYqsJgNCgDa3MFGRR8ErA4Be4NjaOLXYEutlxHmcTvSldthsBtAGw9489AjoKGwGxChCyGdJXhuOfkbfDMXh', 1699707585, 1),
-(19, 'pMszTSLulEllZn9KmhoEwrxkb8Ppqsv8SBI89Lg5CQ3le1XDXaNrJLhtlkJFhQnOOvzWt9T2DuWCYv3g', 'oTtccUYSHgYNpYCWeRMSy1vHji7x7RIkH2EQd4Q2gC8g0AByXzZ5hU239gy514HMU6BXDPf9WnVWv0uehrXLlrmYyzgtEvgkqLJrOPyh90aUuxucS66FpHWDGEgWAy6ZOb', 1699740885, 1);
+(19, 'pMszTSLulEllZn9KmhoEwrxkb8Ppqsv8SBI89Lg5CQ3le1XDXaNrJLhtlkJFhQnOOvzWt9T2DuWCYv3g', 'i8ujNZNr3kC807iJvzy4AptUu9I2wgGdCVDuwWRPVhVKttExiOymyWnq5bUxCCK80fsDZQYkVJ1yGAIKOwcS7USIsooB2xV1XLqaSQBsdfDLkm6MdNQUPpOTdagptsCsGb', 1699794322, 1);
 
 -- --------------------------------------------------------
 
@@ -155,7 +156,7 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`id_settings`, `name_website`, `logo_website`, `default_id_access_for_user`, `on_replacements`, `on_announcements`, `how_many_failed_login_attempts`) VALUES
-(1, 'Page Name', NULL, 0, 1, 1, 10);
+(1, 'Page Name', NULL, 2, 1, 1, 3);
 
 -- --------------------------------------------------------
 
@@ -171,9 +172,9 @@ CREATE TABLE `users` (
   `login` varchar(50) DEFAULT NULL,
   `email` varchar(250) NOT NULL,
   `password` text NOT NULL,
-  `is_new_pass` int(11) NOT NULL DEFAULT 0,
-  `is_active` int(11) NOT NULL DEFAULT 0,
-  `is_blocked` int(11) NOT NULL DEFAULT 0,
+  `is_new_pass` int(11) DEFAULT 0,
+  `is_active` int(11) DEFAULT 0,
+  `is_blocked` int(11) DEFAULT 0,
   `datetime_add` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -182,7 +183,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `id_access`, `user_name`, `user_lastname`, `login`, `email`, `password`, `is_new_pass`, `is_active`, `is_blocked`, `datetime_add`) VALUES
-(1, 1, 'Adam', 'Nowak', 'zhenias', '', '$2y$10$j06wTJ9uAOBJRqNF5RbMN.jd9qATbWNmWlegvX7Onzznjh70ka1dm', 0, 1, 0, NULL);
+(1, 1, 'Adam', 'Nowak', 'zhenias', '', '$2y$10$j06wTJ9uAOBJRqNF5RbMN.jd9qATbWNmWlegvX7Onzznjh70ka1dm', 0, 1, 0, NULL),
+(2, 2, 'Applications', 'asfjahsfk', NULL, 'zsam@g.com', '$2y$10$oFhZIxUEfyOsdSaJBXOoDun/mnk6s3I7tjgw4zJNZDnKjtQwFBEZm', NULL, NULL, NULL, 1699792058),
+(3, 2, 'Applications', 'asfjahsfk', NULL, 'zsam@g.com', '$2y$10$dCA7y0ngEIm/LeFzLegfE.E79keB9e6Z4vcAxkr9HzSBw4zviIQWi', NULL, 1, NULL, 1699792124);
 
 --
 -- Indeksy dla zrzutów tabel
@@ -262,7 +265,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
